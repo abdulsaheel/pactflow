@@ -24,4 +24,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000/health || exit 1
 
 # Start the application directly with ts-node (no build needed)
-CMD ["yarn", "ts-node", "src/index.ts"]
+CMD ["yarn", "dev"]
