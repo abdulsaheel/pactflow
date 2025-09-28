@@ -10,14 +10,15 @@ RUN corepack enable
 # Copy package files first for better caching
 COPY package.json yarn.lock .yarnrc.yml ./
 
+
 # Install all dependencies with node-modules linker for better Docker compatibility
 RUN YARN_ENABLE_GLOBAL_CACHE=false yarn install
 
 # Copy rest of source code
 COPY . .
 
-# Build TypeScript - force compilation ignoring errors
-RUN yarn tsc --skipLibCheck --noEmitOnError false --isolatedModules --allowJs || echo "TypeScript errors ignored" && ls -la src/ && yarn tsc --transpileOnly --skipLibCheck --isolatedModules src/*.ts --outDir dist/ 2>/dev/null || yarn tsc --noCheck --outDir dist src/*.ts 2>/dev/null || (echo "Fallback: copying JS files" && find src -name "*.ts" -exec cp {} dist/ \;)
+# Skip TypeScript compilation - just run with ts-node for hackathon speed
+RUN yarn add -g ts-node
 
 # Expose port 3000
 EXPOSE 3000
@@ -26,5 +27,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000/health || exit 1
 
-# Start the application
-CMD ["node", "dist/index.js"]
+# Start the application directly with ts-node (no build needed)
+CMD ["npx", "ts-node", "src/index.ts"]
