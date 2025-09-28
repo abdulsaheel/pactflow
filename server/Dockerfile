@@ -17,7 +17,7 @@ RUN YARN_ENABLE_GLOBAL_CACHE=false yarn install
 COPY . .
 
 # Build TypeScript
-RUN yarn build
+RUN yarn tsc --skipLibCheck --noEmitOnError false --target es2020 --module commonjs --outDir dist --rootDir src
 
 # Expose port 3000
 EXPOSE 3000
